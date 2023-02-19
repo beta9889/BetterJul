@@ -1,5 +1,4 @@
 ﻿using JulAPI.HelperClasses;
-using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
 
@@ -20,9 +19,6 @@ namespace APITest
         public void SetupDatabase() 
         {
             _connection = _helperConnection.testMockDatabase();
-            var _connectionOption = new DbContextOptionsBuilder<BloggingContext>()
-            .UseSqlite(_connection)
-            .Options;
             using (var command = _connection.CreateCommand())
             {
                 command.CommandText = "Create Database Jul;";

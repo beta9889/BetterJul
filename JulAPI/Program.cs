@@ -18,10 +18,9 @@ namespace JulAPI
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddScoped<IMovieService, MoviesService>();
-
+            builder.Services.AddScoped<IHelperConnection, HelperConnection>();
 
             var app = builder.Build();
-            HelperConnection.SetConfiguration(app.Configuration);
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

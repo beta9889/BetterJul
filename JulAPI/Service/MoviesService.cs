@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using JulAPI.HelperClasses;
+using MySql.Data.MySqlClient;
 using Shared;
 using System.Collections.Generic;
 using System.Data;
@@ -11,11 +12,17 @@ namespace JulAPI.Service
     }
     public class MoviesService: IMovieService
     {
+        private readonly IHelperConnection _connectionHelper;
+        public MoviesService(IHelperConnection connectionHelper) 
+        {
+            _connectionHelper = connectionHelper;            
+        }
+
         public List<Movies> Get()
         {
             MySqlDataAdapter adapter = new();
             DataSet dataSet = new();
-            using(var connection = HelperClasses.HelperConnection.getConnection())
+            using(var connection = _connectionHelper.getConnection())
             using (var command = connection.CreateCommand())
             {
                 {

@@ -1,37 +1,63 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
 using System.Data;
+using System.Data.Common;
 
 namespace JulAPI.HelperClasses
 {
-    public static class HelperConnection
+    public interface IHelperConnection
     {
-        private static IConfiguration _configuration { get; set; }
 
-        private static string? _connecitonString { get; set; }
+        public void SetConfiguration(string connectionString);
+        public MySqlConnection getConnection(string username = "root", string password = "");
+        public List<T> ConvertRowToList<T>(DataSet dataSet, string columnName, int index);
+        public SqliteConnection testMockDatabase();
 
-        public static void SetConfiguration(IConfiguration config)
+    }
+
+    public class HelperConnection : IHelperConnection
+    {
+        private IConfiguration? _configuration { get; set; }
+        private string? _connecitonString { get; set; }
+        private readonly bool _test;
+        public HelperConnection(IConfiguration? config, bool test = false)
         {
+            _test= test;
             _configuration = config;
         }
 
-        public static MySqlConnection getConnection(string username = "root", string password = "")
+        public void SetConfiguration(string connectionString) {
+            _connecitonString = connectionString;   
+        }
+
+        public MySqlConnection getConnection(string? username = "root", string? password = "")
         {
             if (_connecitonString == null)
             {
                 _connecitonString = _configuration.GetValue<string>("ConnectionStrings");
-                _connecitonString = _connecitonString + "User ID = " + username + ";";
+                if (!String.IsNullOrEmpty(username))
+                {
+                    _connecitonString = _connecitonString + "User ID = " + username + ";";
+                }
 
-                if (password != null)
+                if (!String.IsNullOrEmpty(password))
                 {
                     _connecitonString = _connecitonString + "Password=" + password + ";";
                 }
             }
-            var connection = new MySqlConnection(_connecitonString);
+            MySqlConnection connection = new (_connecitonString);
             connection.Open();
             return connection;
         }
 
-        public static List<T> ConvertSingleColumnList<T>(DataSet dataSet, string columnName)
+        public SqliteConnection testMockDatabase()
+        {
+            SqliteConnection connection = new("Filename=:memory:");
+            connection.Open();
+            return connection;
+        }
+
+        public List<T> ConvertSingleColumnList<T>(DataSet dataSet, string columnName)
         {
             if (dataSet.Tables != null)
             {
@@ -48,7 +74,7 @@ namespace JulAPI.HelperClasses
             }
         }
 
-        public static List<List<T>> ConvertDataSetToList<T>(DataSet dataSet, List<string> columnNames)
+        public List<List<T>> ConvertDataSetToList<T>(DataSet dataSet, List<string> columnNames)
         {
             if (dataSet.Tables != null)
             {
@@ -70,7 +96,7 @@ namespace JulAPI.HelperClasses
             }
         }
 
-        public static List<T> ConvertRowToList<T>(DataSet dataSet, string columnName, int index)
+        public List<T> ConvertRowToList<T>(DataSet dataSet, string columnName, int index)
         {
             if (dataSet.Tables != null)
             {

@@ -1,3 +1,7 @@
+using JulAPI.HelperClasses;
+using JulAPI.Service;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace JulAPI
 {
     public class Program
@@ -13,8 +17,11 @@ namespace JulAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+            builder.Services.AddScoped<IMovieService, MoviesService>();
 
+
+            var app = builder.Build();
+            HelperConnection.SetConfiguration(app.Configuration);
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

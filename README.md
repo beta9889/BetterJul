@@ -30,6 +30,7 @@ In the same project (JulAPI) create a file called "*appsettings.Development.json
 In the project ClientSide create a file called "*appsettings.json*" with the following lines
 
 ```
+ {
   "Logging": {
     "LogLevel": {
       "Default": "Information",
